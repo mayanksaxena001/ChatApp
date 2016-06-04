@@ -113,5 +113,6 @@ public class ChatClient  implements Runnable {
 	    }
 		new ChatClient("192.168.2.8",
 				SERVER_PORT);
+		System.out.println("");
 	}
 }
