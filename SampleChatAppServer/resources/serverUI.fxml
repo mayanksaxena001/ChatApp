@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox minHeight="-Infinity" prefHeight="50.0" style="-fx-background-color: #eaeaea;">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefWidth="230.0">
+               <children>
+                  <Label text="Sample Chat Server">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <Button mnemonicParsing="false" text="Logout" />
+                  <Button layoutX="83.0" layoutY="23.0" mnemonicParsing="false" text="Server" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" layoutX="175.0" layoutY="10.0" minHeight="-Infinity" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <Label layoutX="30.0" layoutY="25.0" text="IP :">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="ipaddress" textFill="#16bf3b">
+                     <font>
+                        <Font name="System Bold Italic" size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" layoutX="210.0" layoutY="10.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button mnemonicParsing="false" text="Exit" />
+               </children>
+            </HBox>
+         </children>
+         <padding>
+            <Insets right="10.0" />
+         </padding>
+      </HBox>
+      <TextArea editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>
