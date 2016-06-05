@@ -17,7 +17,7 @@
                   <Button fx:id="serverButton" layoutX="81.0" layoutY="23.0" mnemonicParsing="false" text="Server" />
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" layoutX="156.0" layoutY="10.0" maxWidth="500.0" minWidth="-Infinity" prefWidth="300.0" spacing="10.0">
+            <HBox alignment="CENTER_LEFT" layoutX="156.0" layoutY="10.0" maxWidth="-Infinity" minWidth="-Infinity" spacing="10.0">
                <children>
                   <Label text="Welcome!!">
                      <font>
@@ -43,7 +43,7 @@
             <Insets left="10.0" right="10.0" />
          </padding>
       </HBox>
-      <TextArea fx:id="displayTextArea" editable="false" opacity="0.0" wrapText="true" VBox.vgrow="ALWAYS" />
+      <TextArea fx:id="displayTextArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
       <TextArea fx:id="chattingTextArea" maxHeight="200.0" minHeight="-Infinity" prefHeight="100.0" promptText="write something.." wrapText="true" />
    </children>
 </VBox>
