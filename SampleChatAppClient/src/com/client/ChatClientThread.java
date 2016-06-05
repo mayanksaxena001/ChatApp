@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
+import com.fxml.ClientUIController;
 import com.ui.MainFrame;
 
 /**
@@ -18,29 +19,32 @@ import com.ui.MainFrame;
  */
 public class ChatClientThread  implements Runnable {
 
-	private static final int SERVER_PORT = 1991;
-
 	private Socket socket = null;
 
 	private DataInputStream dataInputStream;
 
 	private DataOutputStream dataOutputStream;
-
+	
+	@Deprecated
 	JTextArea textDisplayWindowArea;
 
+	@Deprecated
 	JTextArea textTypingWindowArea;
 
+	@Deprecated
 	private MainFrame mainframe=null;
+	
+	private ClientUIController clientUIController=ClientUIController.getInstance();
 
 	public ChatClientThread(String host, int port) {
-		initGUI();
+//		initGUI();
 		initiateConnection(host, port);
 	}
 
 	private void initiateConnection(String host, int port) {
 		try {
 			socket = new Socket(host, port);
-			mainframe.setSocket(socket);
+//			mainframe.setSocket(socket);
 			// We got a connection! Tell the world
 			System.out.println("connected to " + socket);
 
@@ -60,6 +64,10 @@ public class ChatClientThread  implements Runnable {
 		}
 	}
 
+	public Socket getSocket() {
+		return socket;
+	}
+
 	@Override
 	public void run() {
 		// Receive messages one-by-one, forever
@@ -70,28 +78,37 @@ public class ChatClientThread  implements Runnable {
 				if (dataInputStream != null)
 					message = dataInputStream.readUTF();
 				// Print it to our text window
-				textDisplayWindowArea.append(message + "\n");
+				clientUIController.getDisplayTextArea().appendText(message + "\n");
 			} catch (IOException e) {
 				System.out.println("Socket connection closed");
 			}
 		}
 	}
 
+	public  DataInputStream getDataInputStream() {
+		return dataInputStream;
+	}
+
+	public DataOutputStream getDataOutputStream() {
+		return dataOutputStream;
+	}
+
+	@Deprecated
 	private void initGUI() {
 		mainframe=new MainFrame();
 		textDisplayWindowArea=mainframe.getTextDisplayWindowArea();
 		textTypingWindowArea=mainframe.getTextTypingWindowArea();
 	}
 
-	public static void main(String[] args) {
-		try 
-	    { 
-	        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"); 
-	    } 
-	    catch(Exception e){ 
-	    }
-		new ChatClientThread("192.168.2.8",
-				SERVER_PORT);
-		System.out.println("");
-	}
+//	public static void main(String[] args) {
+//		try 
+//	    { 
+//	        UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"); 
+//	    } 
+//	    catch(Exception e){ 
+//	    }
+//		new ChatClientThread("192.168.2.8",
+//				SERVER_PORT);
+//		System.out.println("");
+//	}
 }
