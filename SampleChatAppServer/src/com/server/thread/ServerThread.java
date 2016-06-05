@@ -26,7 +26,6 @@ public class ServerThread extends Thread {
 
 	@Override
 	public void run() {
-
 		try {
 			// Create a DataInputStream for communication; the client
 			// is using a DataOutputStream to write to us

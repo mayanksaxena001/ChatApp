@@ -23,7 +23,7 @@ public class ChatServer {
 
 	private static final int SERVER_PORT = 1991;
 	
-	private final static String IP="192.168.2.8";
+	private final static String SERVER_IP="192.168.2.8";
 
 	private ServerSocket serverSocket = null;
 
@@ -48,7 +48,7 @@ public class ChatServer {
 	}
 
 	private void listen(int port) throws IOException {
-		InetAddress addr =InetAddress.getByName(IP);
+		InetAddress addr =InetAddress.getByName(SERVER_IP);
 		serverSocket = new ServerSocket(port,100,addr);
 		window.setServerSocket(serverSocket);
 		
@@ -59,7 +59,8 @@ public class ChatServer {
 			Socket socket;
 			while ((socket = serverSocket.accept()) != null) {
 				
-			textWindow.append("connected to "+socket+"\n");	
+			textWindow.append("connected to "+socket+"\n");
+			System.out.println("connected to "+socket+"\n");	
 				// Create a DataOutputStream for writing data to the
 				// other side
 				DataOutputStream dout = new DataOutputStream(
@@ -111,10 +112,12 @@ public class ChatServer {
 				// ... get the output stream ...
 				DataOutputStream dout = (DataOutputStream) map.getValue();
 				// ... and send the message
-				try {
-					dout.writeUTF("The socket "+socket+" has logged out");
-				} catch (IOException ie) {
-					ie.printStackTrace();
+				if(dout!=null){
+					try {
+						dout.writeUTF("The socket "+socket+" has logged out");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			// Make sure it's closed

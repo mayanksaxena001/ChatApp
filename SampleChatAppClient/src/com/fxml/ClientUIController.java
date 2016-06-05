@@ -12,6 +12,8 @@ import com.server.Server;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
@@ -65,6 +67,11 @@ public class ClientUIController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		init();
 		setUpActions();
+		try {
+			currentChatClientThread=new ChatClientThread(currentServer.getServerIp(), currentServer.getPort());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void init() {
@@ -115,12 +122,16 @@ public class ClientUIController implements Initializable {
 	}
 
 	private void handleLogOutAction() {
-		// TODO remove current profile
-		
+		clear();
+		descriptionLabel.setText("Please connect to server ");
 	}
 
 	private void handleServerAction() {
 		// TODO server window for changing server port and address
+		createDialog();
+	}
+
+	private void createDialog() {
 		Dialog<Server> dialog=new Dialog<>();
 		dialog.setTitle("Server Details");
 		dialog.setResizable(false);
@@ -135,6 +146,8 @@ public class ClientUIController implements Initializable {
 		ipTextField.setText(currentServer.getServerIp());
 		
 		GridPane contentGridPane=new GridPane();
+		contentGridPane.setHgap(10);
+		contentGridPane.setVgap(10);
 		contentGridPane.add(serverPort, 1	, 1);
 		contentGridPane.add(portTextField, 2	, 1);
 		contentGridPane.add(serverIP, 1	, 2);
@@ -142,13 +155,28 @@ public class ClientUIController implements Initializable {
 		
 		dialog.getDialogPane().setContent(contentGridPane);
 		ButtonType buttonTypeOk = new ButtonType("Okay", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+		ButtonType buttonTypeConnect = new ButtonType("Connect");
+		dialog.getDialogPane().getButtonTypes().addAll(buttonTypeConnect,buttonTypeOk);
 
 		dialog.setResultConverter((b)->{
 			        if (b == buttonTypeOk) {
 			        	currentServer.setPort(Integer.parseInt(portTextField.getText()));
 			        	currentServer.setServerIp( ipTextField.getText());
 			            return currentServer;
+			        }else if(b==buttonTypeConnect){
+			        	try {
+							currentChatClientThread=new ChatClientThread(currentServer.getServerIp(), currentServer.getPort());
+							Alert alert=new Alert(AlertType.INFORMATION);
+							alert.setHeaderText("Successfully connected to server...");
+							alert.setContentText(currentServer.toString());
+							alert.showAndWait();
+							dialog.close();
+						} catch (IOException e) {
+							Alert alert=new Alert(AlertType.ERROR);
+							alert.setContentText(e.getMessage());
+							alert.show();
+							e.printStackTrace();
+						}
 			        }
 			        return null;
 			});
@@ -159,10 +187,56 @@ public class ClientUIController implements Initializable {
 		//done
 		Stage stage=(Stage)centralVbox.getScene().getWindow();
 		stage.close();
+		clear();
+	}
+
+	private void clear() {
+		try {
+			currentChatClientThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void handleProfileAction() {
 		//TODO profile window containing name and hostname
+
+		Dialog<Profile> dialog=new Dialog<>();
+		dialog.setTitle("Server Details");
+		dialog.setResizable(false);
+		dialog.setHeaderText("Enter your profile details and \n" +
+				    "press Okay (or click title bar 'X' for cancel).");
+		Label profileName=new Label("Profile Name");
+		Label localIp=new Label("IP Address");
+		TextField profileNameTextField=new TextField();
+		TextField ipTextField=new TextField();
+		
+		profileNameTextField.setText(currentProfile.getName());
+		ipTextField.setText(currentProfile.getHostName());
+		
+		GridPane contentGridPane=new GridPane();
+		contentGridPane.setHgap(10);
+		contentGridPane.setVgap(10);
+		contentGridPane.add(profileName, 1	, 1);
+		contentGridPane.add(profileNameTextField, 2	, 1);
+		contentGridPane.add(localIp, 1	, 2);
+		contentGridPane.add(ipTextField, 2	, 2);
+		
+		dialog.getDialogPane().setContent(contentGridPane);
+		ButtonType buttonTypeOk = new ButtonType("Save", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+		dialog.setResultConverter((b)->{
+			        if (b == buttonTypeOk) {
+			        	currentProfile.setName(profileNameTextField.getText());
+			        	currentProfile.setHostName(ipTextField.getText());
+			        	descriptionLabel.setText(currentProfile.toString());
+			            return currentProfile;
+			        }
+			        return null;
+			});
+		dialog.showAndWait();
+	
 	}
 
 	public TextArea getDisplayTextArea() {

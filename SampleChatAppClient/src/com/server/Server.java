@@ -29,4 +29,10 @@ public class Server {
 	public void setServerIp(String serverIp) {
 		this.serverIp = serverIp;
 	}
+
+	@Override
+	public String toString() {
+		return "Server [port=" + port + ", serverIP=" + serverIp + "]";
+	}
+	
 }

@@ -17,7 +17,7 @@ import com.ui.MainFrame;
  * @author Mayank_Saxena
  *
  */
-public class ChatClientThread  implements Runnable {
+public class ChatClientThread extends Thread {
 
 	private Socket socket = null;
 
@@ -36,13 +36,18 @@ public class ChatClientThread  implements Runnable {
 	
 	private ClientUIController clientUIController=ClientUIController.getInstance();
 
-	public ChatClientThread(String host, int port) {
+	public ChatClientThread(String host, int port) throws IOException {
 //		initGUI();
-		initiateConnection(host, port);
+		try {
+			initiateConnection(host, port);
+			setName(Integer.toString(socket.getPort()));
+		} catch (IOException e) {
+			Thread.currentThread().interrupt();
+			throw new IOException();
+		}
 	}
 
-	private void initiateConnection(String host, int port) {
-		try {
+	private void initiateConnection(String host, int port) throws UnknownHostException, IOException {
 			socket = new Socket(host, port);
 //			mainframe.setSocket(socket);
 			// We got a connection! Tell the world
@@ -53,15 +58,10 @@ public class ChatClientThread  implements Runnable {
 			dataInputStream = new DataInputStream(socket.getInputStream());
 			dataOutputStream = new DataOutputStream(socket.getOutputStream());
 			
-			mainframe.setDataInputStream(dataInputStream);
-			mainframe.setDataOutputStream(dataOutputStream);
+//			mainframe.setDataInputStream(dataInputStream);
+//			mainframe.setDataOutputStream(dataOutputStream);
 			// Start a background thread for receiving messages
 			new Thread(this).start();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public Socket getSocket() {
@@ -71,14 +71,19 @@ public class ChatClientThread  implements Runnable {
 	@Override
 	public void run() {
 		// Receive messages one-by-one, forever
-		while (socket.isConnected() && !socket.isClosed()) {
+		while (true && !Thread.currentThread().isInterrupted()) {
 			// Get the next message
 			String message = "";
 			try {
-				if (dataInputStream != null)
+				if (dataInputStream != null && socket.isConnected() && !socket.isClosed()){
 					message = dataInputStream.readUTF();
-				// Print it to our text window
-				clientUIController.getDisplayTextArea().appendText(message + "\n");
+					// Print it to our text window
+					clientUIController.getDisplayTextArea().appendText(message + "\n");
+				}else{
+					this.interrupt();
+					socket.close();
+					break;
+				}
 			} catch (IOException e) {
 				System.out.println("Socket connection closed");
 			}

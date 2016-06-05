@@ -30,4 +30,10 @@ public class Profile {
 	public void setHostName(String hostName) {
 		this.hostName = hostName;
 	}
+
+	@Override
+	public String toString() {
+		return "Profile [name : " + name + "  hostName= : " + hostName + "]";
+	}
+	
 }
