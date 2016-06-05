@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox minHeight="-Infinity" prefHeight="50.0" style="-fx-background-color: #eaeaea;">
+         <children>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label text="Sample Chat App" textFill="#252424">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <Button fx:id="logoutButton" mnemonicParsing="false" text="logout" />
+                  <Button fx:id="connectButton" mnemonicParsing="false" text="connect" />
+                  <Button fx:id="serverButton" layoutX="81.0" layoutY="23.0" mnemonicParsing="false" text="server" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" layoutX="156.0" layoutY="10.0" prefWidth="300.0" spacing="10.0">
+               <children>
+                  <Label fx:id="descriptionLabel" text="Welcome!!" textFill="#dd0845">
+                     <font>
+                        <Font name="System Bold Italic" size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" nodeOrientation="LEFT_TO_RIGHT" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button fx:id="exitButton" mnemonicParsing="false" text="Exit" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <TextArea fx:id="displayTextArea" editable="false" opacity="0.0" wrapText="true" VBox.vgrow="ALWAYS" />
+      <TextArea fx:id="chattingTextArea" maxHeight="200.0" minHeight="-Infinity" prefHeight="100.0" promptText="write something.." wrapText="true" />
+   </children>
+</VBox>
