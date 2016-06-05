@@ -7,13 +7,13 @@
 <?import javafx.scene.layout.*?>
 
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox minHeight="-Infinity" prefHeight="50.0" style="-fx-background-color: #eaeaea;">
          <children>
-            <HBox alignment="CENTER_LEFT" prefWidth="230.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
-                  <Label text="Sample Chat Server">
+                  <Label text="Sample Chat Server App">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
@@ -53,6 +53,6 @@
             <Insets right="10.0" />
          </padding>
       </HBox>
-      <TextArea editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
+      <TextArea editable="false" prefHeight="400.0" wrapText="true" VBox.vgrow="ALWAYS" />
    </children>
 </VBox>
