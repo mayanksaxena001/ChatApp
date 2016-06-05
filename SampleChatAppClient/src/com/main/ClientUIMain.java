@@ -15,6 +15,7 @@ public class ClientUIMain extends Application {
 		Scene scene=new Scene(parent);
 		scene.getStylesheets().add("/application-style.css");
 		primaryStage.setScene(scene);
+		primaryStage.setTitle("Sample Client Chat App");
 		primaryStage.show();
 	}
 
