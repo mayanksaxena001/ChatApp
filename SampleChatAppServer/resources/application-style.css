@@ -1,0 +1,26 @@
+.root{
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color:#71acd6;
+}
+.label{
+	-fx-text-fill:#8000ff;
+}
+.button{
+		-fx-background-color:firebrick;
+		-fx-text-fill:white;
+		-fx-border-insets:0 ;
+		-fx-background-radius:0 0 0 0;
+}
+.button:hover{
+	-fx-background-color:#ff8000;
+	-fx-text-fill:black;
+}
+
+.text-area:disabled{
+	-fx-background-color:#71acd6;
+}
+
+.text-area, .text-area .viewport, .text-area .content {
+    -fx-background-color: rgba(53,89,119,0.4);
+    -fx-text-fill:white;
+}

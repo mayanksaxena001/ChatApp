@@ -1,5 +1,6 @@
 package com.server;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import javax.swing.JTextArea;
 
+import com.fxml.ServerUIController;
 import com.server.thread.ServerThread;
 import com.ui.ServerWindow;
 
@@ -19,47 +21,39 @@ import com.ui.ServerWindow;
  * @author Mayank_Saxena
  *
  */
-public class ChatServer {
-
-	private static final int SERVER_PORT = 1991;
-	
-	private final static String SERVER_IP="192.168.2.8";
+public class ChatServerThread extends Thread{
 
 	private ServerSocket serverSocket = null;
+	
+	private Socket socket;
 
 	private Map<Socket,OutputStream> outputStreams = new HashMap<Socket,OutputStream>();
 	
-	private ServerWindow window=null;
-	
-	private JTextArea textWindow=null;
+	private ServerUIController serverUIController=ServerUIController.getInstance();
 
-	public ChatServer(int port) {
-		try {
-			initGUI();
-			listen(port);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public ChatServerThread(int port,String ip) throws IOException {
+//			initGUI();
+			listen(port,ip);
+			setName(Integer.toString(socket.getPort()));
 	}
 
+	@Deprecated
 	private void initGUI() {
-		window=new ServerWindow();
-		textWindow=window.getTextWindow();
+//		window=new ServerWindow();
+//		textWindow=window.getTextWindow();
 	}
 
-	private void listen(int port) throws IOException {
-		InetAddress addr =InetAddress.getByName(SERVER_IP);
+	private void listen(int port,String ip) throws IOException {
+		InetAddress addr =InetAddress.getByName(ip);
 		serverSocket = new ServerSocket(port,100,addr);
-		window.setServerSocket(serverSocket);
-		
+//		window.setServerSocket(serverSocket);
 		String message="Listening on " + serverSocket;
 		System.out.println(message);// display on console
-		textWindow.append(message+"\n");
+		serverUIController.getDisplayTextArea().appendText(message+"\n");
 		try {
-			Socket socket;
 			while ((socket = serverSocket.accept()) != null) {
 				
-			textWindow.append("connected to "+socket+"\n");
+				serverUIController.getDisplayTextArea().appendText("connected to "+socket+"\n");
 			System.out.println("connected to "+socket+"\n");	
 				// Create a DataOutputStream for writing data to the
 				// other side
@@ -69,7 +63,7 @@ public class ChatServer {
 				outputStreams.put(socket, dout);
 				// Create a new thread for this connection, and then forget
 				// about it
-				new ServerThread(this, socket);
+				new Thread(this).start();;
 				socket = null;
 			}
 		} catch (Exception e) {
@@ -105,7 +99,7 @@ public class ChatServer {
 			// Tell the world
 			String message="Removing connection to " + socket;
 			System.out.println(message);
-			textWindow.append(message+"\n");
+			serverUIController.getDisplayTextArea().appendText(message+"\n");
 			// Remove it from our hashtable/list
 			outputStreams.remove(socket);
 			for (Map.Entry<Socket,OutputStream> map:getOutputStreams().entrySet()) {
@@ -131,17 +125,46 @@ public class ChatServer {
 
 	}
 
+	@Override
+	public void run() {
+		try {
+			// Create a DataInputStream for communication; the client
+			// is using a DataOutputStream to write to us
+			DataInputStream dataInputStream = new DataInputStream(
+					socket.getInputStream());
+			// Over and over, forever ...
+			while (true && !Thread.currentThread().isInterrupted()) {
+				// ... read the next message ...
+				if (socket.isConnected() && !socket.isClosed()) {
+					String message = dataInputStream.readUTF();
+					// ... tell the world ...
+					// System.out.println("Sending " + message);
+					// ... and have the server send it to all clients
+					sendToAll(message);
+				} else {
+					socket.close();
+					this.interrupt();
+					break;
+				}
+			}
+		} catch (Exception ie) {
+			ie.getStackTrace();
+			try {
+				if (!socket.isClosed())
+					socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} finally {
+			// The connection is closed for one reason or another,
+			// so have the server dealing with it
+			removeConnection(socket);
+		}
+
+	}
 	// Get an enumeration of all the OutputStreams, one for each client
 	// connected to us
 	Map<Socket,OutputStream> getOutputStreams() {
 		return outputStreams;
-	}
-
-	public static void main(String[] args) {
-
-		// Create a Server object, which will automatically begin
-		// accepting connections.
-		new ChatServer(SERVER_PORT);
-
 	}
 }

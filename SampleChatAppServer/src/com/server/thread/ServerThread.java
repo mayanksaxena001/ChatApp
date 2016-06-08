@@ -5,19 +5,20 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
-import com.server.ChatServer;
+import com.server.ChatServerThread;
 
 /**
  * 
  * @author Mayank_Saxena
  *
  */
+@Deprecated
 public class ServerThread extends Thread {
 
-	private ChatServer chatServer;
+	private ChatServerThread chatServer;
 	private Socket socket;
 
-	public ServerThread(ChatServer chatServer, Socket socket) {
+	public ServerThread(ChatServerThread chatServer, Socket socket) {
 		this.chatServer = chatServer;
 		this.socket = socket;
 		setName(Integer.toString(socket.getPort()));
