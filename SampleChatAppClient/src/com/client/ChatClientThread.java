@@ -25,15 +25,6 @@ public class ChatClientThread extends Thread {
 
 	private DataOutputStream dataOutputStream;
 	
-	@Deprecated
-	JTextArea textDisplayWindowArea;
-
-	@Deprecated
-	JTextArea textTypingWindowArea;
-
-	@Deprecated
-	private MainFrame mainframe=null;
-	
 	private ClientUIController clientUIController=ClientUIController.getInstance();
 
 	public ChatClientThread(String host, int port) throws IOException {
@@ -71,21 +62,28 @@ public class ChatClientThread extends Thread {
 	@Override
 	public void run() {
 		// Receive messages one-by-one, forever
+		try {
 		while (true && !Thread.currentThread().isInterrupted()) {
 			// Get the next message
 			String message = "";
-			try {
-				if (dataInputStream != null && socket.isConnected() && !socket.isClosed()){
+				if ( socket.isConnected() && !socket.isClosed()){
 					message = dataInputStream.readUTF();
 					// Print it to our text window
 					clientUIController.getDisplayTextArea().appendText(message + "\n");
-				}else{
+				}
+				else{
 					this.interrupt();
-					socket.close();
 					break;
 				}
-			} catch (IOException e) {
-				System.out.println("Socket connection closed");
+		}
+		} catch (IOException e) {
+			this.interrupt();
+			System.out.println("Socket connection closed");
+		}finally {
+			try {
+				socket.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 		}
 	}
@@ -98,13 +96,14 @@ public class ChatClientThread extends Thread {
 		return dataOutputStream;
 	}
 
-	@Deprecated
-	private void initGUI() {
-		mainframe=new MainFrame();
-		textDisplayWindowArea=mainframe.getTextDisplayWindowArea();
-		textTypingWindowArea=mainframe.getTextTypingWindowArea();
-	}
-
+	public void  destroy(){
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.interrupt();
+ }
 //	public static void main(String[] args) {
 //		try 
 //	    { 

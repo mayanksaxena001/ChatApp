@@ -6,27 +6,27 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="contentVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fxml.ServerUIController">
+<VBox fx:id="centralVbox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.fxml.ServerUIController">
    <children>
-      <HBox minHeight="-Infinity" prefHeight="50.0" style="-fx-background-color: #eaeaea;">
+      <HBox minHeight="-Infinity" prefHeight="50.0" style="-fx-background-color: #71acd6;">
          <children>
-            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+            <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="20.0">
                <children>
-                  <Button fx:id="logoutButton" mnemonicParsing="false" text="Logout" />
-                  <Button fx:id="serverButton" layoutX="83.0" layoutY="23.0" mnemonicParsing="false" text="Server" />
+                  <Button fx:id="logoutButton" minWidth="-Infinity" mnemonicParsing="false" text="Logout" />
+                  <Button fx:id="serverButton" layoutX="83.0" layoutY="23.0" minWidth="-Infinity" mnemonicParsing="false" text="Server" />
                </children>
                <padding>
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_LEFT" layoutX="175.0" layoutY="10.0" minHeight="-Infinity" prefWidth="200.0" spacing="10.0">
+            <HBox alignment="CENTER_LEFT" layoutX="175.0" layoutY="10.0" maxWidth="400.0" minWidth="-Infinity" prefWidth="300.0" spacing="10.0">
                <children>
                   <Label layoutX="30.0" layoutY="25.0" text="IP :">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label fx:id="descriptionLabel" textFill="#16bf3b">
+                  <Label fx:id="descriptionLabel" textFill="#16bf3b" wrapText="true">
                      <font>
                         <Font name="System Bold Italic" size="14.0" />
                      </font>
@@ -36,9 +36,9 @@
                   <Insets left="20.0" />
                </padding>
             </HBox>
-            <HBox alignment="CENTER_RIGHT" layoutX="210.0" layoutY="10.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_RIGHT" layoutX="210.0" layoutY="10.0" nodeOrientation="LEFT_TO_RIGHT" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="exitButton" mnemonicParsing="false" text="Exit" />
+                  <Button fx:id="exitButton" minWidth="-Infinity" mnemonicParsing="false" text="Exit" />
                </children>
             </HBox>
          </children>

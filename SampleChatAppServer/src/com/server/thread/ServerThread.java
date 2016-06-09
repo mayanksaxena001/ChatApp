@@ -1,24 +1,23 @@
 package com.server.thread;
 
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
-import com.server.ChatServerThread;
+import com.server.ChatServer;
+
 
 /**
  * 
  * @author Mayank_Saxena
  *
  */
-@Deprecated
 public class ServerThread extends Thread {
 
-	private ChatServerThread chatServer;
+	private ChatServer chatServer;
 	private Socket socket;
 
-	public ServerThread(ChatServerThread chatServer, Socket socket) {
+	public ServerThread(ChatServer chatServer, Socket socket) {
 		this.chatServer = chatServer;
 		this.socket = socket;
 		setName(Integer.toString(socket.getPort()));
@@ -27,6 +26,7 @@ public class ServerThread extends Thread {
 
 	@Override
 	public void run() {
+
 		try {
 			// Create a DataInputStream for communication; the client
 			// is using a DataOutputStream to write to us
@@ -37,9 +37,6 @@ public class ServerThread extends Thread {
 				// ... read the next message ...
 				if (socket.isConnected() && !socket.isClosed()) {
 					String message = dataInputStream.readUTF();
-					// ... tell the world ...
-					// System.out.println("Sending " + message);
-					// ... and have the server send it to all clients
 					chatServer.sendToAll(message);
 				} else {
 					socket.close();

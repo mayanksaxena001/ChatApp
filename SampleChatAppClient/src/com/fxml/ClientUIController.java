@@ -70,7 +70,7 @@ public class ClientUIController implements Initializable {
 		try {
 			currentChatClientThread=new ChatClientThread(currentServer.getServerIp(), currentServer.getPort());
 		} catch (IOException e) {
-			e.printStackTrace();
+			currentChatClientThread=null;
 		}
 	}
 
@@ -164,38 +164,44 @@ public class ClientUIController implements Initializable {
 			        	currentServer.setServerIp( ipTextField.getText());
 			            return currentServer;
 			        }else if(b==buttonTypeConnect){
-			        	try {
-							currentChatClientThread=new ChatClientThread(currentServer.getServerIp(), currentServer.getPort());
-							Alert alert=new Alert(AlertType.INFORMATION);
-							alert.setHeaderText("Successfully connected to server...");
-							alert.setContentText(currentServer.toString());
-							alert.showAndWait();
-							dialog.close();
-						} catch (IOException e) {
-							Alert alert=new Alert(AlertType.ERROR);
-							alert.setContentText(e.getMessage());
-							alert.show();
-							e.printStackTrace();
-						}
+			        		clear();
+							createNewConnection();
+							displayTextArea.clear();
+							return currentServer;
 			        }
 			        return null;
 			});
 		dialog.showAndWait();
 	}
 
+	private void createNewConnection()  {
+		try {
+			currentChatClientThread=new ChatClientThread(currentServer.getServerIp(), currentServer.getPort());
+		Alert alert=new Alert(AlertType.INFORMATION);
+		alert.setHeaderText("Successfully connected to server...");
+		alert.setContentText(currentServer.toString());
+		alert.showAndWait();
+		descriptionLabel.setText(currentServer.getServerIp());
+		}catch (IOException e) {
+			Alert alert=new Alert(AlertType.ERROR);
+			alert.setContentText("Connection failed!!!!");
+			alert.show();
+		}
+	}
+
 	private void handleExitAction() {
 		//done
+		clear();
 		Stage stage=(Stage)centralVbox.getScene().getWindow();
 		stage.close();
-		clear();
 	}
 
 	private void clear() {
-		try {
-			currentChatClientThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if(currentChatClientThread!=null){
+			currentChatClientThread.destroy();
+			currentChatClientThread=null;
 		}
+		displayTextArea.clear();
 	}
 
 	private void handleProfileAction() {

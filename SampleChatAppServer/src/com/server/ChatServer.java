@@ -1,6 +1,5 @@
 package com.server;
 
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
@@ -9,19 +8,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.JTextArea;
+import java.util.Map.Entry;
 
 import com.fxml.ServerUIController;
 import com.server.thread.ServerThread;
-import com.ui.ServerWindow;
 
 /**
  * 
  * @author Mayank_Saxena
  *
  */
-public class ChatServerThread extends Thread{
+public class ChatServer extends Thread {
 
 	private ServerSocket serverSocket = null;
 	
@@ -29,24 +26,35 @@ public class ChatServerThread extends Thread{
 
 	private Map<Socket,OutputStream> outputStreams = new HashMap<Socket,OutputStream>();
 	
+	private Map<Socket,Thread> threads = new HashMap<Socket,Thread>();
+	
 	private ServerUIController serverUIController=ServerUIController.getInstance();
 
-	public ChatServerThread(int port,String ip) throws IOException {
-//			initGUI();
-			listen(port,ip);
-			setName(Integer.toString(socket.getPort()));
+	private String ip;
+
+	private int port;
+
+	public ChatServer(int port,String ip) throws IOException {
+		this.port=port;
+		this.ip=ip;
+		setName(InetAddress.getLocalHost().getHostName());
+			start();
+	}
+	
+	@Override
+	public void run() {
+		super.run();
+		threads.clear();
+		try {
+			listen();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	@Deprecated
-	private void initGUI() {
-//		window=new ServerWindow();
-//		textWindow=window.getTextWindow();
-	}
-
-	private void listen(int port,String ip) throws IOException {
+	private void listen() throws IOException {
 		InetAddress addr =InetAddress.getByName(ip);
 		serverSocket = new ServerSocket(port,100,addr);
-//		window.setServerSocket(serverSocket);
 		String message="Listening on " + serverSocket;
 		System.out.println(message);// display on console
 		serverUIController.getDisplayTextArea().appendText(message+"\n");
@@ -54,7 +62,7 @@ public class ChatServerThread extends Thread{
 			while ((socket = serverSocket.accept()) != null) {
 				
 				serverUIController.getDisplayTextArea().appendText("connected to "+socket+"\n");
-			System.out.println("connected to "+socket+"\n");	
+			System.out.println("connected to "+socket);	
 				// Create a DataOutputStream for writing data to the
 				// other side
 				DataOutputStream dout = new DataOutputStream(
@@ -63,7 +71,8 @@ public class ChatServerThread extends Thread{
 				outputStreams.put(socket, dout);
 				// Create a new thread for this connection, and then forget
 				// about it
-				new Thread(this).start();;
+				ServerThread thread=new ServerThread(this,socket);
+				threads.put(socket, thread);
 				socket = null;
 			}
 		} catch (Exception e) {
@@ -102,11 +111,12 @@ public class ChatServerThread extends Thread{
 			serverUIController.getDisplayTextArea().appendText(message+"\n");
 			// Remove it from our hashtable/list
 			outputStreams.remove(socket);
+			threads.remove(socket);
 			for (Map.Entry<Socket,OutputStream> map:getOutputStreams().entrySet()) {
 				// ... get the output stream ...
 				DataOutputStream dout = (DataOutputStream) map.getValue();
 				// ... and send the message
-				if(dout!=null){
+				if(dout!=null && !map.getKey().isClosed()){
 					try {
 						dout.writeUTF("The socket "+socket+" has logged out");
 					} catch (IOException e) {
@@ -125,42 +135,13 @@ public class ChatServerThread extends Thread{
 
 	}
 
-	@Override
-	public void run() {
-		try {
-			// Create a DataInputStream for communication; the client
-			// is using a DataOutputStream to write to us
-			DataInputStream dataInputStream = new DataInputStream(
-					socket.getInputStream());
-			// Over and over, forever ...
-			while (true && !Thread.currentThread().isInterrupted()) {
-				// ... read the next message ...
-				if (socket.isConnected() && !socket.isClosed()) {
-					String message = dataInputStream.readUTF();
-					// ... tell the world ...
-					// System.out.println("Sending " + message);
-					// ... and have the server send it to all clients
-					sendToAll(message);
-				} else {
-					socket.close();
-					this.interrupt();
-					break;
-				}
-			}
-		} catch (Exception ie) {
-			ie.getStackTrace();
-			try {
-				if (!socket.isClosed())
-					socket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} finally {
-			// The connection is closed for one reason or another,
-			// so have the server dealing with it
-			removeConnection(socket);
+	public void destroyAllThreads() throws IOException{
+		for(Entry<Socket, Thread> entry:threads.entrySet()){
+			entry.getKey().close();
+			entry.getValue().interrupt();
 		}
-
+		serverSocket.close();
+		this.interrupt();
 	}
 	// Get an enumeration of all the OutputStreams, one for each client
 	// connected to us

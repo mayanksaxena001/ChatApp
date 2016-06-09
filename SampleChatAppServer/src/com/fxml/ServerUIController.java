@@ -6,7 +6,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
-import com.server.ChatServerThread;
+import com.server.ChatServer;
 import com.server.Server;
 
 import javafx.beans.Observable;
@@ -50,16 +50,15 @@ public class ServerUIController implements Initializable {
 	
 	private static ServerUIController serverUIController;
 	
-	private ChatServerThread currentServerThread;
+	private ChatServer currentChatServer;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		init();
 		setUpActions();
 		try {
-			currentServerThread=new ChatServerThread(currentServer.getPort(), currentServer.getServerIp());
+			currentChatServer=new ChatServer(currentServer.getPort(), currentServer.getServerIp());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -102,18 +101,20 @@ public class ServerUIController implements Initializable {
 	}
 
 	private void clear() {
-		// TODO Auto-generated method stub
-		try {
-			currentServerThread.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+		if(currentChatServer!=null){
+			try {
+				currentChatServer.destroyAllThreads();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			currentChatServer=null;
 		}
+		displayTextArea.clear();
 	}
 
 	private void handleLogOutAction() {
 		clear();
-		descriptionLabel.setText("Please connect to server ");
-		
+		descriptionLabel.setText("click in server button to Restart");
 	}
 	
 	private void createDialog() {
@@ -144,9 +145,8 @@ public class ServerUIController implements Initializable {
 		contentGridPane.add(ipTextField, 2	, 3);
 		
 		dialog.getDialogPane().setContent(contentGridPane);
-		ButtonType buttonTypeOk = new ButtonType("Reset", ButtonData.OK_DONE);
-		ButtonType buttonTypeConnect = new ButtonType("Reset Server");
-		Observable property=portTextField.textProperty().isEmpty().and(ipTextField.textProperty().isEmpty());
+		ButtonType buttonTypeOk = new ButtonType("Save", ButtonData.OK_DONE);
+		ButtonType buttonTypeConnect = new ButtonType("Restart Server",ButtonData.APPLY);
 		dialog.getDialogPane().getButtonTypes().addAll(buttonTypeConnect,buttonTypeOk);
 
 		dialog.setResultConverter((b)->{
@@ -156,14 +156,10 @@ public class ServerUIController implements Initializable {
 			        	currentServer.setHostName(hostNameTextField.getText());
 			            return currentServer;
 			        }else if(b==buttonTypeConnect){
-//			        	clear();
+			        	clear();
 			        	try {
-			    			currentServerThread=new ChatServerThread(currentServer.getPort(), currentServer.getServerIp());
-			    			Alert alert=new Alert(AlertType.INFORMATION);
-			    			alert.setHeaderText("Successfully connected to server...");
-			    			alert.setContentText(currentServer.toString());
-			    			alert.showAndWait();
-			    			dialog.close();
+			        		restartServer();
+			    			return currentServer;
 			    		} catch (IOException e) {
 			    			Alert alert=new Alert(AlertType.ERROR);
 							alert.setContentText(e.getMessage());
@@ -171,9 +167,21 @@ public class ServerUIController implements Initializable {
 							e.printStackTrace();
 			    		}
 			        }
+			        else {
+			        	return null;
+			        }
 			        return null;
 			});
 		dialog.showAndWait();
+	}
+
+	private void restartServer() throws IOException {
+		currentChatServer=new ChatServer(currentServer.getPort(), currentServer.getServerIp());
+		Alert alert=new Alert(AlertType.INFORMATION);
+		alert.setHeaderText("Server restarted successfully...");
+		alert.setContentText(currentChatServer.toString());
+		alert.showAndWait();
+		descriptionLabel.setText(currentServer.getServerIp());
 	}
 	
 	public TextArea getDisplayTextArea() {
